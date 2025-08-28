@@ -1,3 +1,5 @@
+@ECHO OFF
+
 REM -----
 REM DEFINE COLOURS (v1)
 REM -----
