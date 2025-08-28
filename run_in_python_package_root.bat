@@ -7,14 +7,20 @@ REM Requirements:
 REM ansi.bat
 
 REM -----
-REM ENSURE WE ARE RUNNING IN THE PACKAGE ROOT (v2)
+REM ENSURE WE ARE RUNNING IN THE PACKAGE ROOT (v3)
 REM -----
 
 REM ----- Invoke Our Utility Scripts -----
-CALL "ansi.bat"
+SETLOCAL
+SET "CURRENT_DIRECTORY=%~dp0"
+CALL "%CURRENT_DIRECTORY%ansi.bat" --q || EXIT /B 1
+ENDLOCAL
 
 REM Set the name of the scripts dir.
 set SCRIPTS_DIRECTORY_NAME=scripts
+
+REM Set the name of the utils dir.
+set UTILS_DIRECTORY_NAME=%SCRIPTS_DIRECTORY_NAME%\utils
 
 REM Get the directory where the batch file is located
 SET "SCRIPT_DIR=%~dp0"
@@ -31,7 +37,9 @@ IF /I "%CURRENT_DIR%"=="%SCRIPT_DIR%" (
     ECHO %PENDING_COLOUR%Moving up one level...%ANSI_RESET%
     CD ..
     ECHO %SUCCESS_COLOUR%Changed directory to the package root!%ANSI_RESET%
-) ELSE IF /I "%CURRENT_DIR%\%SCRIPTS_DIRECTORY_NAME%"=="%SCRIPT_DIR%" (
+) ELSE IF /I "%CURRENT_DIR%\%SCRIPTS_DIRECTORY_NAME%"=="%SCRIPT_DIR%"  (
+    ECHO %INFO_COLOUR%Running from the parent directory.%ANSI_RESET%
+) ELSE IF /I "%CURRENT_DIR%\%UTILS_DIRECTORY_NAME%"=="%SCRIPT_DIR%"  (
     ECHO %INFO_COLOUR%Running from the parent directory.%ANSI_RESET%
 ) ELSE (
     ECHO %ERROR_COLOUR%Running from an unexpected directory. Please run from the package root or the "scripts" directory.%ANSI_RESET%
@@ -40,5 +48,8 @@ IF /I "%CURRENT_DIR%"=="%SCRIPT_DIR%" (
     ECHO %INFO_COLOUR%Checked if the following are equal:%ANSI_RESET%
     ECHO %INFO_COLOUR%A: "%CURRENT_DIR%\%SCRIPTS_DIRECTORY_NAME%"%ANSI_RESET%
     ECHO %INFO_COLOUR%B: "%SCRIPT_DIR%"%ANSI_RESET%
-    GOTO :ENDOFSCRIPT
+    ECHO %INFO_COLOUR%or%ANSI_RESET%
+    ECHO %INFO_COLOUR%A: "%CURRENT_DIR%\%UTILS_DIRECTORY_NAME%"%ANSI_RESET%
+    ECHO %INFO_COLOUR%B: "%SCRIPT_DIR%"%ANSI_RESET%
+    EXIT /B 1
 )
